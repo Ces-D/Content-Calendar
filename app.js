@@ -1,20 +1,30 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+require("dotenv").config();
+const express = require("express");
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const helmet = require("helmet");
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const api = require("./api");
 
-var app = express();
+const mongoose = require("mongoose");
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+const server = express();
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// Model
+const options = {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+};
+mongoose.connect(process.env.MONGO_URL, options);
+
+server.use(helmet());
+server.use(cors());
+server.use(morgan("dev"));
+server.use(bodyParser.json());
+
+api(server);
 
 module.exports = app;
