@@ -1,6 +1,6 @@
-const { body } = require("express-validators");
+const { body } = require("express-validator");
 
-signInOrSignUpValidators = [
+const signInOrSignUpValidators = [
     body("email")
         .isEmail()
         .withMessage("Must Be A Valid Email")
@@ -24,7 +24,7 @@ signInOrSignUpValidators = [
     }),
 ];
 
-updateValidators = [
+const updateValidators = [
     body("email").custom((email) => {
         if (email) {
             email
