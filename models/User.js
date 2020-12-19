@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const _ = require("lodash");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const mongoSchema = new mongoose.Schema(
     {
@@ -20,7 +22,7 @@ const mongoSchema = new mongoose.Schema(
         jsonToken: {
             type: String,
             required: true,
-            unique: True,
+            unique: true,
         },
         isTwitterConnected: {
             type: Boolean,
@@ -34,17 +36,60 @@ const mongoSchema = new mongoose.Schema(
 );
 
 class UserClass {
-    static async signInOrSignUp({ email, password, displayName }) {
-        const user = await this.findOne({ email });
+    static async login({ email, password }) {
+        try {
+            const user = await this.findOne({ email });
+            if (user) {
+                const isValidated = await bcrypt.compare(
+                    password,
+                    user.password
+                );
+                if (isValidated) {
+                    // if user isValidated return user with jsonToken
+                    const modifier = {};
 
-        if (user) {
-            const modifier = {};
-            // some logic for returning the jwt and signing in
+                    let jsonToken = jwt.sign(
+                        {
+                            _id: user._id,
+                            displayName: user.displayName,
+                        },
+                        process.env.JWT_SECRET_KEY,
+                        { expiresIn: "10h" }
+                    );
+
+                    modifier.jsonToken = jsonToken;
+
+                    await this.updateOne({ _id: user._id }, { $set: modifier });
+                    return user;
+                }
+                throw new Error("Email Or Password Do Not Match");
+            }
+            throw new Error("Email Not Registered");
+        } catch (error) {
+            return error;
         }
-        // else Sign Up
     }
 
-    static async updateAccount({ id, email, password, displayName }) {
+    static async register({ email, password, displayName }) {
+        try {
+            const user = await this.findOne({ email });
+            if (user) {
+                throw new Error("User Already Registered");
+            }
+            // save the user information and return a JWT and signing in
+            const hashPassword = await bcrypt.hashSync(password, 10);
+            const newUser = await this.create({
+                email,
+                hashPassword,
+                displayName,
+            });
+            return newUser;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    static async update({ id, newEmail, newPassword, newDisplayName }) {
         const user = await this.findOne({ id });
 
         if (user) {

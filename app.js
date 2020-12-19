@@ -5,11 +5,11 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const helmet = require("helmet");
 
-const api = require("./api");
+const userApi = require("./api/users");
 
 const mongoose = require("mongoose");
 
-const server = express();
+const app = express();
 
 // Model
 const options = {
@@ -20,11 +20,11 @@ const options = {
 };
 mongoose.connect(process.env.MONGO_URL, options);
 
-server.use(helmet());
-server.use(cors());
-server.use(morgan("dev"));
-server.use(bodyParser.json());
+app.use(helmet());
+app.use(cors());
+app.use(morgan("dev"));
+app.use(bodyParser.json());
 
-api(server);
+app.use("/api/user", userApi);
 
 module.exports = app;
