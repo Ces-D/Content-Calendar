@@ -21,7 +21,6 @@ const mongoSchema = new mongoose.Schema(
         },
         jsonToken: {
             type: String,
-            required: true,
             unique: true,
         },
         isTwitterConnected: {
@@ -40,12 +39,13 @@ class UserClass {
         try {
             const user = await this.findOne({ email });
             if (user) {
+                // console.log("user Found");
                 const isValidated = await bcrypt.compare(
                     password,
                     user.password
                 );
                 if (isValidated) {
-                    // if user isValidated return user with jsonToken
+                    // console.log("Password Validated");
                     const modifier = {};
 
                     let jsonToken = jwt.sign(
@@ -60,13 +60,15 @@ class UserClass {
                     modifier.jsonToken = jsonToken;
 
                     await this.updateOne({ _id: user._id }, { $set: modifier });
-                    return user;
+                    return { user, jsonToken };
                 }
-                throw new Error("Email Or Password Do Not Match");
+                throw "Email Or Password Do Not Match";
             }
-            throw new Error("Email Not Registered");
+            throw "Email Not Registered";
         } catch (error) {
-            return error;
+            // console.log("Model Error", error);
+            // TODO: Condition error response if error contains sensitive info
+            throw new Error(error);
         }
     }
 
@@ -74,18 +76,20 @@ class UserClass {
         try {
             const user = await this.findOne({ email });
             if (user) {
-                throw new Error("User Already Registered");
+                throw "User Already Registered";
             }
-            // save the user information and return a JWT and signing in
             const hashPassword = await bcrypt.hashSync(password, 10);
             const newUser = await this.create({
-                email,
-                hashPassword,
-                displayName,
+                email: email,
+                password: hashPassword,
+                displayName: displayName,
             });
+            // console.log("User Registered");
             return newUser;
         } catch (error) {
-            return error;
+            // console.log("Model Error", error);
+            // TODO: Condition error response if error contains sensitive info
+            throw new Error(error);
         }
     }
 
@@ -116,4 +120,6 @@ class UserClass {
 
 mongoSchema.loadClass(UserClass);
 
-module.exports = mongoSchema;
+const User = mongoose.model("User", mongoSchema);
+
+module.exports = User;

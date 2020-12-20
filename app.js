@@ -18,12 +18,15 @@ const options = {
     useFindAndModify: false,
     useUnifiedTopology: true,
 };
-mongoose.connect(process.env.MONGO_URL, options);
+mongoose
+    .connect(process.env.MONGO_URL, options)
+    .then(console.log("Database Connected"));
 
 app.use(helmet());
 app.use(cors());
 app.use(morgan("dev"));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api/user", userApi);
 
