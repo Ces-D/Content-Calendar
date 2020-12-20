@@ -7,6 +7,7 @@ const {
     registerValidators,
     updateValidators,
 } = require("../utils/userValidators");
+const { protectedAccess } = require("../platforms/users");
 
 const router = express.Router();
 
@@ -46,10 +47,10 @@ router.post("/register/", registerValidators, async (req, res, next) => {
 });
 
 /* PUT Update User */
-router.put("/update/", updateValidators, (req, res, next) => {
+router.put("/update/", protectedAccess, updateValidators, (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json(errors.array());
-    // logic for updating
+    res.json({ message: "success" });
 });
 
 /* DELETE User */
