@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+
+const { generateToken } = require("../platforms/users");
+const { keys } = require("lodash");
 
 const mongoSchema = new mongoose.Schema(
     {
@@ -48,19 +50,15 @@ class UserClass {
                     // console.log("Password Validated");
                     const modifier = {};
 
-                    let jsonToken = jwt.sign(
-                        {
-                            _id: user._id,
-                            displayName: user.displayName,
-                        },
-                        process.env.JWT_SECRET_KEY,
-                        { expiresIn: "10h" }
+                    let jsonToken = await generateToken(
+                        user._id,
+                        user.displayName
                     );
 
                     modifier.jsonToken = jsonToken;
 
                     await this.updateOne({ _id: user._id }, { $set: modifier });
-                    return { user, jsonToken };
+                    return jsonToken;
                 }
                 throw "Email Or Password Do Not Match";
             }
@@ -84,6 +82,7 @@ class UserClass {
                 password: hashPassword,
                 displayName: displayName,
             });
+
             // console.log("User Registered");
             return newUser;
         } catch (error) {
@@ -93,14 +92,33 @@ class UserClass {
         }
     }
 
-    static async update({ id, newEmail, newPassword, newDisplayName }) {
-        const user = await this.findOne({ id });
+    static async update({ id, updatedFields }) {
+        try {
+            const user = await this.findOne({ _id: id });
 
-        if (user) {
-            const modifier = {};
-            // logic for updating and returning a new JWT
+            if (user) {
+                const modifier = {};
+                // logic for updating and returning a new JWT
+
+                for (const key in updatedFields) {
+                    if (key == "password") {
+                        const value = bcrypt.hashSync(updatedFields[key], 10);
+                        modifier.password = value;
+                    }
+                    modifier.password = updatedFields[key];
+                }
+                // console.log(modifier);
+                // TODO: return updated user not previous user
+                await this.updateOne({ _id: id }, { $set: modifier });
+
+                const updatedUser = await this.findOne({ _id: id });
+                return updatedUser;
+            } else {
+                throw "User Not Found";
+            }
+        } catch (error) {
+            throw new Error(error);
         }
-        // else return error
     }
 
     static async connectOrDisconnectTwitter({

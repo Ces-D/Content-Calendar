@@ -47,11 +47,24 @@ router.post("/register/", registerValidators, async (req, res, next) => {
 });
 
 /* PUT Update User */
-router.put("/update/", protectedAccess, updateValidators, (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json(errors.array());
-    res.json({ message: "success" });
-});
+router.put(
+    "/update/",
+    protectedAccess,
+    updateValidators,
+    async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json(errors.array());
+        try {
+            const updatedUser = await User.update({
+                id: req.user._id,
+                updatedFields: req.body,
+            });
+            res.json(updatedUser);
+        } catch (error) {
+            res.json({ error: error.message });
+        }
+    }
+);
 
 /* DELETE User */
 router.delete("/delete/", (req, res, next) => {
