@@ -76,7 +76,7 @@ class UserClass {
             if (user) {
                 throw "User Already Registered";
             }
-            const hashPassword = await bcrypt.hashSync(password, 10);
+            const hashPassword = bcrypt.hashSync(password, 10);
             const newUser = await this.create({
                 email: email,
                 password: hashPassword,
@@ -92,31 +92,47 @@ class UserClass {
         }
     }
 
-    static async update({ id, updatedFields }) {
+    static async update({ id, updateFields }) {
         try {
-            const user = await this.findOne({ _id: id });
-
-            if (user) {
-                const modifier = {};
-                // logic for updating and returning a new JWT
-
-                for (const key in updatedFields) {
-                    if (key == "password") {
-                        const value = bcrypt.hashSync(updatedFields[key], 10);
-                        modifier.password = value;
-                    }
-                    modifier.password = updatedFields[key];
+            const modifier = {};
+            if (updateFields.displayName) {
+                const existingDisplayName = await this.findOne({
+                    displayName: updateFields.displayName,
+                });
+                if (existingDisplayName) {
+                    throw "Display Name Already Registered";
                 }
-                // console.log(modifier);
-                // TODO: return updated user not previous user
-                await this.updateOne({ _id: id }, { $set: modifier });
-
-                const updatedUser = await this.findOne({ _id: id });
-                return updatedUser;
-            } else {
-                throw "User Not Found";
+                modifier.displayName = updateFields.displayName;
             }
+            if (updateFields.password) {
+                modifier.password = bcrypt.hashSync(updateFields.password, 10);
+            }
+            if (updateFields.email) {
+                const existingEmail = await this.findOne({
+                    email: updateFields.email,
+                });
+                if (existingEmail) {
+                    throw "Email Already Registered";
+                }
+                modifier.email = updateFields.email;
+            }
+            const updatedUser = await this.findOneAndUpdate(
+                { _id: id },
+                { $set: modifier },
+                { returnOriginal: false }
+            );
+            return updatedUser;
         } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    static async delete({ id }) {
+        try {
+            await this.findOneAndDelete({ _id: id });
+            return "User Deleted";
+        } catch (error) {
+            console.log(error);
             throw new Error(error);
         }
     }

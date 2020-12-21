@@ -57,7 +57,7 @@ router.put(
         try {
             const updatedUser = await User.update({
                 id: req.user._id,
-                updatedFields: req.body,
+                updateFields: req.body,
             });
             res.json(updatedUser);
         } catch (error) {
@@ -67,8 +67,13 @@ router.put(
 );
 
 /* DELETE User */
-router.delete("/delete/", (req, res, next) => {
-    // logic for deleting
+router.delete("/delete/", protectedAccess, async (req, res, next) => {
+    try {
+        const userDeleted = await User.delete({ id: req.user._id });
+        res.json({ message: userDeleted });
+    } catch (error) {
+        res.json({ error: error });
+    }
 });
 
 module.exports = router;
