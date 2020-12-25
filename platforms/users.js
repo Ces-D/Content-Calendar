@@ -1,15 +1,12 @@
 const jwt = require("jsonwebtoken");
 
-async function protectedAccess(req, res, next) {
+function protectedAccess(req, res, next) {
     // console.log(req.headers)
     const authToken =
         req.headers["authorization"] &&
         req.headers["authorization"].split(" ")[1];
     try {
-        const verified = await jwt.verify(
-            authToken,
-            process.env.JWT_SECRET_KEY
-        );
+        const verified = jwt.verify(authToken, process.env.JWT_SECRET_KEY);
         req.user = verified;
         next();
     } catch (error) {
@@ -17,7 +14,7 @@ async function protectedAccess(req, res, next) {
     }
 }
 
-async function generateToken(id, displayName) {
+function generateToken(id, displayName) {
     return jwt.sign(
         {
             _id: id,
