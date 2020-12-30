@@ -125,24 +125,20 @@ class OAuth {
         return urlObj.origin; // TODO: Test id this is the correct implementation
     }
 
-
     normalizeRequestParameters(parameters) {
         // Response = "a=1&c=hi%20there&f=25&f=50&f=a&z=p&z=t"
         // parameters are collected
         // parameters are sorted
         // concatenated int oa normalized string
         // parameters to include:
-            // Oauth HTTP Authorization Headers excluding 'realm'
-            // in HTTP POST request body with a 'content-type' of 'application/x-www-form-urlencoded'
-            // in HTTP GET parameters added to the urls in the query part
-
+        // Oauth HTTP Authorization Headers excluding 'realm'
+        // in HTTP POST request body with a 'content-type' of 'application/x-www-form-urlencoded'
+        // in HTTP GET parameters added to the urls in the query part
         // parameters are sorted:
-            // lexicographical byte value ordering unless two or more params share the same name
-            
-        // params are concatenated 
-            // name is separated from value by '=' even if empty value
-            // each pair is separated by a '&'
-
+        // lexicographical byte value ordering unless two or more params share the same name
+        // params are concatenated
+        // name is separated from value by '=' even if empty value
+        // each pair is separated by a '&'
     }
 
     createBaseString(httpMethod, url, parameter) {
@@ -167,12 +163,7 @@ class OAuth {
         timeStamp,
         oauthToken,
         oauthVersion
-    ) {
-        // TODO: Finish creating signature
-        // TODO: Fifure out where the parameter ordering needs to be done
-        //
-        // oauthToken aka accessToken
-    }
+    ) {}
     /* ~ Request Tokens ~ */
     requestToken(
         resourceUrl,
@@ -187,4 +178,18 @@ class OAuth {
         // responds with Access Tokens
     }
     /* ~ Authorize ~ */
+}
+
+class OAuthLibrary {
+    static extractParams(raw) {
+        /*
+        extract parameters and return as an array of 2 objects
+
+        should successfully extract parameters from urlencoded query strings,
+        objects, or arrays of 2 arrays. Empty strings/ objects/ arrays will
+        return an empty array of parameters. Any other input will result in a 
+        return value of null 
+        */
+       if (typeof raw === new Object())
+    }
 }

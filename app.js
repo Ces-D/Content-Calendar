@@ -29,29 +29,29 @@ if (process.env.DYNO) {
     trustProxy = true;
 }
 
-passport.use(
-    new TwitterStrategy(
-        {
-            consumerKey: process.env.TWITTER_API_KEY,
-            consumerSecret: process.env.TWITTER_API_SECRET_KEY,
-            callbackURL: "https://localhost:5000/api/twitter/authorize/callback",
-            proxy: trustProxy,
-        },
-        function (token, tokenSecret, profile, cb) {
-            console.log(
-                "Passport Twitter \n",
-                token,
-                "\n",
-                tokenSecret,
-                "\n",
-                profile,
-                "\n",
-                cb
-            );
-            return cb(token, tokenSecret);
-        }
-    )
-);
+// passport.use(
+//     new TwitterStrategy(
+//         {
+//             consumerKey: process.env.TWITTER_API_KEY,
+//             consumerSecret: process.env.TWITTER_API_SECRET_KEY,
+//             callbackURL: "https://localhost:5000/api/twitter/authorize/callback",
+//             proxy: trustProxy,
+//         },
+//         function (token, tokenSecret, profile, cb) {
+//             console.log(
+//                 "Passport Twitter \n",
+//                 token,
+//                 "\n",
+//                 tokenSecret,
+//                 "\n",
+//                 profile,
+//                 "\n",
+//                 cb
+//             );
+//             return cb(token, tokenSecret);
+//         }
+//     )
+// );
 
 app.use(helmet());
 app.use(cors());
