@@ -1,4 +1,4 @@
-const express = require("express");
+const router = require("express").Router()
 const { validationResult } = require("express-validator");
 
 const User = require("../models/User");
@@ -8,8 +8,6 @@ const {
     updateValidators,
 } = require("../utils/userValidators");
 const { protectedAccess } = require("../platforms/users");
-
-const router = express.Router();
 
 /* POST Login User */
 router.post("/login/", loginValidators, async (req, res, next) => {
@@ -71,6 +69,16 @@ router.delete("/delete/", protectedAccess, async (req, res, next) => {
     try {
         const userDeleted = await User.delete({ id: req.user._id });
         res.json({ message: userDeleted });
+    } catch (error) {
+        res.json({ error: error });
+    }
+});
+
+/* GET User Account */
+router.get("/", protectedAccess, async (req, res, next) => {
+    try {
+        const user = User.findById({ id: req.user._id });
+        res.json(user);
     } catch (error) {
         res.json({ error: error });
     }
