@@ -4,8 +4,9 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const helmet = require("helmet");
+const session = require("express-session");
 const passport = require("passport");
-const TwitterStrategy = require("passport-twitter").Strategy;
+const twitterSetup = require("./platforms/twitter")
 
 const mongoose = require("mongoose");
 
@@ -29,35 +30,14 @@ if (process.env.DYNO) {
     trustProxy = true;
 }
 
-// passport.use(
-//     new TwitterStrategy(
-//         {
-//             consumerKey: process.env.TWITTER_API_KEY,
-//             consumerSecret: process.env.TWITTER_API_SECRET_KEY,
-//             callbackURL: "https://localhost:5000/api/twitter/authorize/callback",
-//             proxy: trustProxy,
-//         },
-//         function (token, tokenSecret, profile, cb) {
-//             console.log(
-//                 "Passport Twitter \n",
-//                 token,
-//                 "\n",
-//                 tokenSecret,
-//                 "\n",
-//                 profile,
-//                 "\n",
-//                 cb
-//             );
-//             return cb(token, tokenSecret);
-//         }
-//     )
-// );
-
 app.use(helmet());
-app.use(cors());
+app.use(cors({ credentials: true }));
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({ secret: process.env.SESSION_SECRET }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // API
 const userApi = require("./api/users");
