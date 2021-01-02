@@ -2,23 +2,18 @@ const passport = require("passport");
 const TwitterStrategy = require("passport-twitter");
 const User = require("../models/User");
 
-//TODO: https://scotch.io/tutorials/easy-node-authentication-twitter
-
-passport.serializeUser((user, done) => {});
-
-passport.deserializeUser((user, done) => {});
-
 passport.use(
     new TwitterStrategy(
         {
             consumerKey: process.env.TWITTER_API_KEY,
             consumerSecret: process.env.TWITTER_API_SECRET_KEY,
-            callbackUrl: "/api/twitter/authorize/callback",
+            callbackUrl: "http:127.0.0.1/api/twitter/authorize/callback",
         },
-        async (token, tokenSecret, profile, done) => {
-            console.log("Token ", token);
-            console.log("Token Secret ", tokenSecret);
+        async (AccessToken, AccessTokenSecret, profile, done) => {
+            console.log("Token ", AccessToken);
+            console.log("Token Secret ", AccessTokenSecret);
             console.log("Profile ", profile);
+            // return done(null, profile);
         }
     )
 );

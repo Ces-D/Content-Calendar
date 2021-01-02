@@ -1,5 +1,4 @@
 const { body, header } = require("express-validator");
-const jwt = require("jsonwebtoken");
 
 const loginValidators = [
     body("email")

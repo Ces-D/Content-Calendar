@@ -3,14 +3,17 @@ const passport = require("passport");
 
 const { protectedAccess } = require("../platforms/users");
 
-router.get("/authorize/", protectedAccess, passport.authenticate("twitter"));
+router.get("/authorize/", passport.authenticate("twitter"));
 
 router.get(
-    "/authorize/callback",
+    "/authorize/callback/",
     passport.authenticate("twitter", {
-        successRedirect: "/api/user/",
-        failWithError: true,
-    })
+        failureMessage: true,
+        failureFlash:true,
+        authInfo: true,
+        // failureRedirect: "/api/user/login",
+    }),
+    (req, res) => [res.json({ user: "Twitter" })]
 );
 
 module.exports = router;
