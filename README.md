@@ -22,3 +22,5 @@ The Log in with Twitter flow can grant authorization to use Twitter APIs on your
 -   [Authentication Best Practices](https://developer.twitter.com/en/docs/authentication/guides/authentication-best-practices)
     <br></br>
 -   [Model Influence](https://github.com/builderbook/builderbook/blob/master/builderbook/server/models/User.js)
+    <br></br>
+-   [Passport Js User Authentication](https://www.youtube.com/playlist?list=PLYQSCk-qyTW2ewJ05f_GKHtTIzjynDgjK)

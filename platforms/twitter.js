@@ -13,7 +13,7 @@ passport.use(
             console.log("Token ", AccessToken);
             console.log("Token Secret ", AccessTokenSecret);
             console.log("Profile ", profile);
-            // return done(null, profile);
+            return done(null, {accessToken: AccessToken, TokenSecret: AccessTokenSecret});
         }
     )
 );

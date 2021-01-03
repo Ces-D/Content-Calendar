@@ -9,11 +9,16 @@ router.get(
     "/authorize/callback/",
     passport.authenticate("twitter", {
         failureMessage: true,
-        failureFlash:true,
-        authInfo: true,
+        failureFlash: true,
+        // successRedirect: "/api/user/",
         // failureRedirect: "/api/user/login",
     }),
-    (req, res) => [res.json({ user: "Twitter" })]
+    (req, res) => {
+        console.log("Hello");
+        console.log("Session:", req.session);
+        console.log("User: ", req.user);
+        res.json({ message: "Hellao" });
+    }
 );
 
 module.exports = router;

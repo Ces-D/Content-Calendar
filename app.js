@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const helmet = require("helmet");
 const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
 const passport = require("passport");
 const twitterSetup = require("./platforms/twitter");
 
@@ -42,14 +43,21 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Sessions
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: true,
-        cookie: { secure: true },
+        resave: false, // dotn save session if unmodified
+        saveUninitialized: false, // don't create session until something stored
+        store: new MongoStore({
+            mongooseConnection: mongoose.connection,
+            secret: process.env.SESSION_STORE_SECRET,
+        }),
+        cookie: { maxAge: 86400000 }, //secure:true -- only for HHTPS websites && trustproxy == true
     })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 
