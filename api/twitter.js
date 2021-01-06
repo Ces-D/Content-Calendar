@@ -17,7 +17,7 @@ router.get(
         console.log("Hello");
         console.log("Session:", req.session);
         console.log("User: ", req.user);
-        res.json({ message: "Hellao" });
+        res.json({ message: "Hello" });
     }
 );
 

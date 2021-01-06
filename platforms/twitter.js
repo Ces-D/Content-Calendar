@@ -10,10 +10,15 @@ passport.use(
             callbackUrl: "http:127.0.0.1/api/twitter/authorize/callback",
         },
         async (AccessToken, AccessTokenSecret, profile, done) => {
-            console.log("Token ", AccessToken);
-            console.log("Token Secret ", AccessTokenSecret);
-            console.log("Profile ", profile);
-            return done(null, {accessToken: AccessToken, TokenSecret: AccessTokenSecret});
+            // console.log("Token ", AccessToken);
+            // console.log("Token Secret ", AccessTokenSecret);
+            // console.log("Profile ", profile);
+            return done(null, {
+                accessToken: AccessToken,
+                TokenSecret: AccessTokenSecret,
+            });
+            // TODO: The done function passes to the route specific middleware.
+            // There is where we should grab the access token and secret and UserModel.connectOrDisconnectTwitter
         }
     )
 );

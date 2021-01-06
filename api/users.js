@@ -1,6 +1,6 @@
-const router = require("express").Router()
+const router = require("express").Router();
 const { validationResult } = require("express-validator");
-
+// TODO: https://gabrieleromanato.name/creating-and-managing-sessions-in-expressjs
 const User = require("../models/User");
 const {
     loginValidators,
@@ -15,14 +15,15 @@ router.post("/login/", loginValidators, async (req, res, next) => {
     if (!errors.isEmpty()) return res.status(400).json(errors.array());
     // logic for logging in
     try {
-        const user = await User.login({
+        const token = await User.login({
             email: req.body.email,
             password: req.body.password,
         });
         // console.log("User: ", user);
-        res.json(user);
+        res.session.user = { token: token };
+        res.status(200).json({ message: "User Logged In" });
     } catch (error) {
-        res.json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
@@ -37,7 +38,7 @@ router.post("/register/", registerValidators, async (req, res, next) => {
             password: req.body.password,
             displayName: req.body.displayName,
         });
-        res.json(newUser);
+        res.json({ message: "User Successfully Created" });
     } catch (error) {
         // console.log("error", error);
         res.json({ error: error.message });
@@ -53,8 +54,9 @@ router.put(
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(400).json(errors.array());
         try {
+            console.log(req.cred._id);
             const updatedUser = await User.update({
-                id: req.user._id,
+                id: req.cred._id,
                 updateFields: req.body,
             });
             res.json(updatedUser);
@@ -64,10 +66,17 @@ router.put(
     }
 );
 
+/* POST Logout User */
+router.post("/logout/", protectedAccess, async (req, res, next) => {
+    delete req.session.user
+    res.json({ message: "User Logged Out" });
+});
+
 /* DELETE User */
 router.delete("/delete/", protectedAccess, async (req, res, next) => {
     try {
-        const userDeleted = await User.delete({ id: req.user._id });
+        const userDeleted = await User.delete({ id: req.cred._id });
+        delete req.session.user
         res.json({ message: userDeleted });
     } catch (error) {
         res.json({ error: error });
@@ -77,7 +86,7 @@ router.delete("/delete/", protectedAccess, async (req, res, next) => {
 /* GET User Account */
 router.get("/", protectedAccess, async (req, res, next) => {
     try {
-        const user = User.findById({ id: req.user._id });
+        const user = User.findById({ id: req.cred._id });
         res.json(user);
     } catch (error) {
         res.json({ error: error });

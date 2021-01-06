@@ -14,30 +14,33 @@ const mongoose = require("mongoose");
 const app = express();
 
 // Model
-const options = {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-};
 mongoose
-    .connect(process.env.MONGO_URL, options)
+    .connect(process.env.MONGO_URL, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useFindAndModify: false,
+        useUnifiedTopology: true,
+    })
     .then(console.log("Database Connected"));
 
-// // Passport
-// const trustProxy = false;
-// if (process.env.DYNO) {
-//     // Apps on heroku are behind a trusted proxy
-//     trustProxy = true;
-// }
+// Passport
+const trustProxy = false;
+if (process.env.DYNO) {
+    // Apps on heroku are behind a trusted proxy
+    trustProxy = true;
+}
+
 passport.serializeUser(function (user, done) {
+    console.log("Serializing");
     done(null, user);
 });
 
 passport.deserializeUser(function (user, done) {
+    console.log("Deserializing");
     done(null, user);
 });
 
+// App Middle wares
 app.use(helmet());
 app.use(cors());
 app.use(morgan("dev"));

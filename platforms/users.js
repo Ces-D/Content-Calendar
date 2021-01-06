@@ -1,16 +1,19 @@
 const jwt = require("jsonwebtoken");
 
 function protectedAccess(req, res, next) {
-    // console.log(req.headers)
-    const authToken =
-        req.headers["authorization"] &&
-        req.headers["authorization"].split(" ")[1];
+    if (!req.session.user) {
+        res.json({ error: "User Not Logged In" });
+    }
+
     try {
-        const verified = jwt.verify(authToken, process.env.JWT_SECRET_KEY);
-        req.user = verified;
+        const verified = jwt.verify(
+            req.session.user.token,
+            process.env.JWT_SECRET_KEY
+        );
+        req.cred = verified;
         next();
     } catch (error) {
-        res.json({ error: error.message });
+        res.json({ error: error });
     }
 }
 
@@ -21,7 +24,7 @@ function generateToken(id, displayName) {
             displayName: displayName,
         },
         process.env.JWT_SECRET_KEY,
-        { expiresIn: "10h" }
+        { expiresIn: "1d" }
     );
 }
 
