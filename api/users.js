@@ -1,6 +1,9 @@
 const router = require("express").Router();
 const { validationResult } = require("express-validator");
 // TODO: https://gabrieleromanato.name/creating-and-managing-sessions-in-expressjs
+// TODO: https://www.airpair.com/express/posts/expressjs-and-passportjs-sessions-deep-dive
+// TODO: https://github.com/t1msh/node-oauth20-provider
+// TODO: https://github.com/panva/node-oidc-provider
 const User = require("../models/User");
 const {
     loginValidators,
@@ -20,7 +23,7 @@ router.post("/login/", loginValidators, async (req, res, next) => {
             password: req.body.password,
         });
         // console.log("User: ", user);
-        res.session.user = { token: token };
+        req.session.user = { token: token };
         res.status(200).json({ message: "User Logged In" });
     } catch (error) {
         res.status(400).json({ error: error.message });

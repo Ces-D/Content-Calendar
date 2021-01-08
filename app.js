@@ -57,7 +57,7 @@ app.use(
             mongooseConnection: mongoose.connection,
             secret: process.env.SESSION_STORE_SECRET,
         }),
-        cookie: { maxAge: 86400000 }, //secure:true -- only for HHTPS websites && trustproxy == true
+        cookie: { maxAge: 86400000, httpOnly: true }, //secure:true -- only for HHTPS websites && trustproxy == true
     })
 );
 
