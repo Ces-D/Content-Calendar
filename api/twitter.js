@@ -9,7 +9,7 @@ router.get("/authorize/callback/", protectedAccess, (req, res) => {
     console.log("Hello From Twitter callback");
     console.log("Session:", req.session);
     console.log("User: ", req.user); // Without passport this is undefined
-    console.log("Cred ", req.credentials);
+    console.log("Cred ", typeof req.credentials._id);
     res.json({ message: "Hello" });
 });
 

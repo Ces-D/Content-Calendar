@@ -91,10 +91,11 @@ router.delete("/delete/", protectedAccess, async (req, res, next) => {
 /* GET User Account */
 router.get("/", protectedAccess, async (req, res, next) => {
     try {
-        const user = User.findById({ id: req.credentials._id });
+        const user = await User.findById(req.credentials._id);
         res.json(user);
     } catch (error) {
-        res.json({ error: error });
+        console.log(error)
+        res.json({ error: error.message });
     }
 });
 
