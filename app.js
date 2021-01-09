@@ -30,16 +30,6 @@ if (process.env.DYNO) {
     trustProxy = true;
 }
 
-passport.serializeUser(function (user, done) {
-    console.log("Serializing");
-    done(null, user);
-});
-
-passport.deserializeUser(function (user, done) {
-    console.log("Deserializing");
-    done(null, user);
-});
-
 // App Middle wares
 app.use(helmet());
 app.use(cors());
@@ -60,6 +50,16 @@ app.use(
         cookie: { maxAge: 86400000, httpOnly: true }, //secure:true -- only for HHTPS websites && trustproxy == true
     })
 );
+
+passport.serializeUser(function (user, done) {
+    console.log("Serializing");
+    done(null, user);
+});
+
+passport.deserializeUser(function (user, done) {
+    console.log("Deserializing");
+    done(null, user);
+});
 
 app.use(passport.initialize());
 app.use(passport.session());

@@ -13,6 +13,7 @@ passport.use(
             // console.log("Token ", AccessToken);
             // console.log("Token Secret ", AccessTokenSecret);
             // console.log("Profile ", profile);
+            console.log("Passport Twitter Strategy Called");
             return done(null, {
                 accessToken: AccessToken,
                 TokenSecret: AccessTokenSecret,

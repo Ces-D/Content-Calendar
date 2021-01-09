@@ -1,16 +1,16 @@
 const jwt = require("jsonwebtoken");
 
 function protectedAccess(req, res, next) {
-    if (!req.session.user) {
+    if (!req.session.CalendarCredentials) {
         res.json({ error: "User Not Logged In" });
     }
 
     try {
         const verified = jwt.verify(
-            req.session.user.token,
+            req.session.CalendarCredentials,
             process.env.JWT_SECRET_KEY
         );
-        req.cred = verified;
+        req.credentials = verified;
         next();
     } catch (error) {
         res.json({ error: error });
