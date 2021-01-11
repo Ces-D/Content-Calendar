@@ -46,6 +46,7 @@ router.post("/register/", registerValidators, async (req, res, next) => {
         res.json({ message: "User Successfully Created" });
     } catch (error) {
         // console.log("error", error);
+        console.log(error);
         res.json({ error: error.message });
     }
 });
@@ -64,9 +65,9 @@ router.put(
                 id: req.credentials._id,
                 updateFields: req.body,
             });
-            res.json(updatedUser);
+            res.status(200).json(updatedUser);
         } catch (error) {
-            res.json({ error: error.message });
+            res.send(400, { error: error.message });
         }
     }
 );
