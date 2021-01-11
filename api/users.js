@@ -82,6 +82,7 @@ router.delete("/delete/", protectedAccess, async (req, res, next) => {
     try {
         const userDeleted = await User.delete({ id: req.credentials._id });
         delete req.session.CalendarCredentials;
+        console.log(req.session)
         res.json({ message: userDeleted });
     } catch (error) {
         res.json({ error: error });
