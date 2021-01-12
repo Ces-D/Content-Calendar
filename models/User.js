@@ -3,7 +3,7 @@ const _ = require("lodash");
 const bcrypt = require("bcrypt");
 
 const { generateToken } = require("../platforms/users");
-const { keys } = require("lodash");
+const { DatabaseError } = require("../utils/errors");
 
 const mongoSchema = new mongoose.Schema(
     {
@@ -25,12 +25,10 @@ const mongoSchema = new mongoose.Schema(
             type: String,
             unique: true,
         },
-        isTwitterConnected: {
-            type: Boolean,
-            default: false,
-        },
-        twitterAccessToken: {
-            type: String,
+        twitterPlatform: {
+            isConnected: { type: Boolean, default: false },
+            accessToken: { type: String },
+            accessTokeSecret: { type: String },
         },
     },
     { timestamps: true }
@@ -50,10 +48,7 @@ class UserClass {
                     // console.log("Password Validated");
                     const modifier = {};
 
-                    let jsonToken = await generateToken(
-                        user._id,
-                        user.displayName
-                    );
+                    let jsonToken = generateToken(user._id, user.displayName);
 
                     modifier.jsonToken = jsonToken;
 
@@ -62,33 +57,35 @@ class UserClass {
                 }
                 throw "Email Or Password Do Not Match";
             }
-            throw "Email Not Registered";
+            throw "User Not Registered";
         } catch (error) {
             // console.log("Model Error", error);
-            // TODO: Condition error response if error contains sensitive info
-            throw new Error(error);
+            throw new DatabaseError(error);
         }
     }
 
     static async register({ email, password, displayName }) {
         try {
-            const user = await this.findOne({ email });
-            if (user) {
-                throw "User Already Registered";
-            }
-            const hashPassword = bcrypt.hashSync(password, 10);
-            const newUser = await this.create({
-                email: email,
-                password: hashPassword,
-                displayName: displayName,
-            });
+            const existingEmail = await this.findOne({ email });
+            const existingDisplayName = await this.findOne({ displayName });
+            if (existingEmail) {
+                throw "Email Already Registered";
+            } else if (existingDisplayName) {
+                throw "Display Name Already Registered";
+            } else {
+                const hashPassword = bcrypt.hashSync(password, 10);
+                const newUser = await this.create({
+                    email: email,
+                    password: hashPassword,
+                    displayName: displayName,
+                });
 
-            // console.log("User Registered");
-            return newUser;
+                // console.log("User Registered");
+                return newUser;
+            }
         } catch (error) {
             // console.log("Model Error", error);
-            // TODO: Condition error response if error contains sensitive info
-            throw new Error(error);
+            throw new DatabaseError(error);
         }
     }
 
@@ -123,7 +120,7 @@ class UserClass {
             );
             return updatedUser;
         } catch (error) {
-            throw new Error(error);
+            throw new DatabaseError(error);
         }
     }
 
@@ -133,18 +130,18 @@ class UserClass {
             return "User Deleted";
         } catch (error) {
             console.log(error);
-            throw new Error(error);
+            throw new DatabaseError(error);
         }
     }
 
     static async connectOrDisconnectTwitter({
         id,
-        twitterAccessToken,
-        isTwitterConnected,
+        credentials,
+        twitterIsConnected,
     }) {
         const user = await this.findOne({ id });
         if (user) {
-            if (isTwitterConnected) {
+            if (twitterIsConnected) {
                 // logic for adding the twitter connection
             }
             // logic for removing the twitter connection

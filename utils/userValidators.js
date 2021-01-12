@@ -1,4 +1,5 @@
-const { body, header } = require("express-validator");
+const { body, header, validationResult } = require("express-validator");
+const { RequestError } = require("../utils/errors");
 
 const loginValidators = [
     body("email")
@@ -51,4 +52,16 @@ const updateValidators = [
         .withMessage("Must Be At Least 2 Character Long"),
 ];
 
-module.exports = { loginValidators, registerValidators, updateValidators };
+const validatorHandling = (req, res, next) => {
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) {
+        next(new RequestError(validatorErrors));
+    }
+    next();
+};
+module.exports = {
+    loginValidators,
+    registerValidators,
+    updateValidators,
+    validatorHandling,
+};

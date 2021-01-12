@@ -71,4 +71,14 @@ const twitterApi = require("./api/twitter");
 app.use("/api/user", userApi);
 app.use("/api/twitter", twitterApi);
 
+// Any 404 endpoints
+app.get("*", (req, res, next) => {
+    let err = new Error("Page Doesn't Exist");
+    err.statusCode = 404;
+    next(err);
+});
+app.use((err, req, res, next) => {
+    console.log(err);
+    res.status(err.statusCode).json({ error: err});
+});
 module.exports = app;

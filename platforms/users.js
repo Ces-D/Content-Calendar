@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
+const { AuthorizationError } = require("../utils/errors");
 
 function protectedAccess(req, res, next) {
     if (!req.session.CalendarCredentials) {
-        res.json({ error: "User Not Logged In" });
+        next(new AuthorizationError("User Not Authorized"));
     }
 
     try {
@@ -13,7 +14,7 @@ function protectedAccess(req, res, next) {
         req.credentials = verified;
         next();
     } catch (error) {
-        res.json({ error: error });
+        next(new AuthorizationError("User Not Verified"));
     }
 }
 

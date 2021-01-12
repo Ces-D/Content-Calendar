@@ -15,6 +15,7 @@ passport.use(
             // console.log("Profile ", profile);
             console.log("Passport Twitter Strategy Called");
             console.log(req.session);
+            console.log("Passport Strategy end")
             return done(null, {
                 accessToken: AccessToken,
                 TokenSecret: AccessTokenSecret,
