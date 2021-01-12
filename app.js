@@ -7,7 +7,6 @@ const helmet = require("helmet");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 const passport = require("passport");
-const twitterSetup = require("./platforms/twitter");
 
 const mongoose = require("mongoose");
 
@@ -51,6 +50,8 @@ app.use(
     })
 );
 
+const twitterSetup = require("./platforms/twitter");
+
 passport.serializeUser(function (user, done) {
     console.log("Serializing");
     done(null, user);
@@ -77,8 +78,10 @@ app.get("*", (req, res, next) => {
     err.statusCode = 404;
     next(err);
 });
+
+// Error Handling
 app.use((err, req, res, next) => {
     console.log(err);
-    res.status(err.statusCode).json({ error: err});
+    res.status(err.statusCode).json({ error: err });
 });
 module.exports = app;

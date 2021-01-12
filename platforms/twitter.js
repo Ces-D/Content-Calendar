@@ -15,10 +15,11 @@ passport.use(
             // console.log("Profile ", profile);
             console.log("Passport Twitter Strategy Called");
             console.log(req.session);
-            console.log("Passport Strategy end")
+            console.log("Passport Strategy end");
             return done(null, {
                 accessToken: AccessToken,
                 TokenSecret: AccessTokenSecret,
+                profile: profile,
             });
             // TODO: The done function passes to the route specific middleware.
             // There is where we should grab the access token and secret and UserModel.connectOrDisconnectTwitter

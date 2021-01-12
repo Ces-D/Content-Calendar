@@ -13,7 +13,6 @@ router.get(
         console.log("Session", req.session);
         console.log("Hello From Twitter callback");
         console.log("User: ", req.user); // Without passport this is undefined
-        console.log("Cred ", typeof req.credentials._id);
         res.json({ message: "Hello" });
     }
 );
