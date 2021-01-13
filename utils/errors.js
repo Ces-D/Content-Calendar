@@ -9,7 +9,7 @@ class DatabaseError {
 class RequestError {
     constructor(message) {
         this.value = "RequestError";
-        this.message = message;
+        this.message = message.errors;
         this.statusCode = 400;
     }
 }
